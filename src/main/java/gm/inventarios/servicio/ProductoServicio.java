@@ -15,13 +15,13 @@ public class ProductoServicio implements IProductoServicio{
 
     private ProductoRepositorio productoRepositorio;
 
+
+
     @Override
     public List<Producto> ListarProductos() {
-        // TODO Auto-generated method stub
-       return this.productoRepositorio.findAll();
-
+        // Retornar solo los productos que tienen estado 1
+        return this.productoRepositorio.findByEstado(1);
     }
-
     @Override
     public Producto buscarProductoPorId(Integer idProducto) {
         // TODO Auto-generated method stub
@@ -29,17 +29,32 @@ public class ProductoServicio implements IProductoServicio{
         return producto;
     }
 
-    @Override
-    public Producto GuardarProducto(Producto producto) {
-        // TODO Auto-generated method stub
 
+    @Override
+public Producto GuardarProducto(Producto producto) {
+    try {
+        if (producto.getEstado() == null) {
+            producto.setEstado(1); // Establecer estado por defecto si es necesario
+        }
         return this.productoRepositorio.save(producto);
+    } catch (Exception e) {
+      
+        throw e; 
     }
+}
+
+
 
     @Override
-    public void EliminarProductoPorId(Integer idProducto) {
-        // TODO Auto-generated method stub
-        this.productoRepositorio.deleteById(idProducto);
+public void EliminarProductoPorId(Integer idProducto) {
+  
+    Producto producto = this.productoRepositorio.findById(idProducto).orElse(null);
+    
+    if (producto != null) {
+        
+        producto.setEstado(0);
+        
+        this.productoRepositorio.save(producto);
     }
-
+}
 }
